@@ -2,11 +2,11 @@ const dataStore = {};
 
 export async function loadGameData() {
     const files = {
-        tile:       '/assets/data/tile-data.json',
-        structure:  '/assets/data/structure-data.json',
-        entity:     '/assets/data/entity-data.json',
-        item:       '/assets/data/item-data.json',
-        ui:         '/assets/data/ui-data.json'
+        tile:       'https://finch957.github.io/js-game/assets/data/tile-data.json',
+        structure:  'https://finch957.github.io/js-game/assets/data/structure-data.json',
+        entity:     'https://finch957.github.io/js-game/assets/data/entity-data.json',
+        item:       'https://finch957.github.io/js-game/assets/data/item-data.json',
+        ui:         'https://finch957.github.io/js-game/assets/data/ui-data.json'
     };
 
     for (const [key, path] of Object.entries(files)) {
