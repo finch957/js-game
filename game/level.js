@@ -129,7 +129,7 @@ export class Level {
             this.addMob(coord, 'rat');
         }
 
-        const gelatine_count = Math.floor(Math.max(Math.random(), 0.5) * this.#index / 3);
+        const gelatine_count = Math.round(Math.max(Math.random(), 0.5) * this.#index / 3);
         for (let i = 0; i < gelatine_count; i++) {
             let coord = null;
             while (!coord) {
