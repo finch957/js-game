@@ -1,0 +1,38 @@
+{
+  "health-bar": {
+    "sprite": "health-bar.png"
+  },
+  "button": {
+    "sprite": "button.png"
+  },
+  "hud-button-wait": {
+    "sprite": "hud-button-wait.png"
+  },
+  "hud-button-inventory": {
+    "sprite": "hud-button-inventory.png"
+  },
+  "hud-button-settings": {
+    "sprite": "hud-button-settings.png"
+  },
+  "hud-button-exit": {
+    "sprite": "hud-button-exit.png"
+  },
+  "generic-panel": {
+    "sprite": "generic-panel.png"
+  },
+  "generic-button": {
+    "sprite": "generic-button.png"
+  },
+  "slot": {
+    "sprite": "slot.png"
+  },
+  "weapon-slot-empty": {
+    "sprite": "weapon-slot-empty.png"
+  },
+  "armor-slot-empty": {
+    "sprite": "armor-slot-empty.png"
+  },
+  "empty": {
+    "sprite": "empty.png"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "floor": {
+    "sprite": "floor.png",
+    "walkable": true
+  },
+  "wall": {
+    "sprite": "wall.png",
+    "walkable": false
+  }
+}

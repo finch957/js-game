@@ -1,0 +1,47 @@
+{
+  "moss": {
+    "sprite": "moss.png",
+    "walkable": true,
+    "interactable": false
+  },
+  "chest": {
+    "sprite": "chest.png",
+    "walkable": false,
+    "interactable": true
+  },
+  "fake-chest": {
+    "sprite": "chest.png",
+    "walkable": false,
+    "interactable": true
+  },
+  "closed-door": {
+    "sprite": "closed-door.png",
+    "walkable": true,
+    "interactable": true
+  },
+  "opened-door": {
+    "sprite": "opened-door.png",
+    "walkable": true,
+    "interactable": false
+  },
+  "ladder-up": {
+    "sprite": "ladder-up.png",
+    "walkable": false,
+    "interactable": true
+  },
+  "ladder-down": {
+    "sprite": "ladder-down.png",
+    "walkable": false,
+    "interactable": true
+  },
+  "trap-active": {
+    "sprite": "trap-active.png",
+    "walkable": true,
+    "interactable": true
+  },
+  "trap-disarmed": {
+    "sprite": "trap-disarmed.png",
+    "walkable": true,
+    "interactable": false
+  }
+}

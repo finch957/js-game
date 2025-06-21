@@ -1,0 +1,25 @@
+{
+  "healing-potion": {
+    "description": "Heals 25HP",
+    "sprite": "potion.png",
+    "category": "consumable",
+    "effect": "heal",
+    "power": 25,
+    "stackable": true,
+    "stack": 4
+  },
+  "short-sword": {
+    "description": "10 DMG",
+    "sprite": "short-sword.png",
+    "category": "weapon",
+    "stackable": false,
+    "damage": 10
+  },
+  "chainmail": {
+    "description": "5 DEF",
+    "sprite": "chainmail.png",
+    "category": "armor",
+    "stackable": false,
+    "defense": 5
+  }
+}
