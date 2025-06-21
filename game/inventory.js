@@ -1,6 +1,8 @@
+import { SLOT_COUNT } from '../core/constants.js';
+
 export class Inventory {
     #items;
-    #slotCount = 10;
+    #slotCount = SLOT_COUNT;
 
     constructor() {
         this.#items = Array(this.#slotCount).fill(null);

@@ -5,3 +5,4 @@ export const ZOOM_STEP = 0.25;
 export const MOUSE_DRAG_THRESHOLD = 3;
 export const MIN_ROOM_SIZE = 7;
 export const MOVE_INTERPOLATION_DURATION = 0.05;
+export const SLOT_COUNT = 10;
