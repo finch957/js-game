@@ -6,7 +6,7 @@ export async function loadGameData() {
         structure:  'https://finch957.github.io/js-game/assets/data/structure-data.json',
         entity:     'https://finch957.github.io/js-game/assets/data/entity-data.json',
         item:       'https://finch957.github.io/js-game/assets/data/item-data.json',
-        ui:         'https://finch957.github.io/js-game/assets/data/ui-data.json'
+        ui:         'https://finch957.github.io/js-game/assets/data/ui-data.json',
     };
 
     for (const [key, path] of Object.entries(files)) {

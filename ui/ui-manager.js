@@ -473,7 +473,7 @@ export class UIManager {
 
         const backButton = new MenuElement({
             type: '9slice',
-            spriteName: getData('ui', 'generic-button').sprite,
+            spriteName: 'generic-button.png',
             sliceBorder: 12,
             width: 200,
             height: 80,
