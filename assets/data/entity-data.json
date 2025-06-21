@@ -1,7 +1,7 @@
 {
   "player": {
     "sprite": "player.png",
-    "health": 100,
+    "health": 50,
     "damage": 5,
     "defense": 2
   },
