@@ -61,6 +61,8 @@ export class Level {
         }
     }
 
+//#region utils
+
     getCurrentTick() {
         return this.#tick;
     }
@@ -114,10 +116,12 @@ export class Level {
         return true;
     }
 
+//#endregion
+
 //#region level generation
 
     #spawnMobs() {
-        const rat_count = Math.floor(this.#index / 5) + (this.#bspDivisions - 1) * 2;
+        const rat_count = Math.floor((this.#index + 1) / 5) + (this.#bspDivisions - 1) * 2;
         for (let i = 0; i < rat_count; i++) {
             let coord = null;
             while (!coord) {
@@ -129,7 +133,7 @@ export class Level {
             this.addMob(coord, 'rat');
         }
 
-        const gelatine_count = Math.round(Math.max(Math.random(), 0.5) * this.#index / 3);
+        const gelatine_count = Math.round(Math.max(Math.random(), 0.5) * (this.#index + 1) / 3);
         for (let i = 0; i < gelatine_count; i++) {
             let coord = null;
             while (!coord) {
