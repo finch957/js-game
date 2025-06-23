@@ -1,33 +1,34 @@
 {
   "player": {
     "sprite": "player.png",
-    "health": 50,
+    "health": 100,
     "damage": 5,
     "defense": 2
   },
   "rat": {
     "sprite": "rat.png",
-    "health": 15,
+    "health": 20,
     "damage": 5,
-    "defense": 1,
+    "defense": 2,
     "steps": 2,
     "delay": 2,
     "score": 50
   },
   "mimic": {
     "sprite": "mimic.png",
-    "health": 25,
-    "damage": 10,
-    "defense": 5,
+    "health": 40,
+    "damage": 12,
+    "defense": 6,
     "steps": 1,
     "delay": 2,
-    "score": 250
+    "score": 250,
+    "drop": "mimic"
   },
   "gelatine": {
     "sprite": "gelatine.png",
-    "health": 20,
-    "damage": 7,
-    "defense": 2,
+    "health": 25,
+    "damage": 8,
+    "defense": 4,
     "steps": 2,
     "delay": 3,
     "score": 100
