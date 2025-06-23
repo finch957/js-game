@@ -34,6 +34,10 @@ export class Player extends Entity {
         return this.#score;
     }
 
+    addScore(amount) {
+        this.#score += amount;
+    }
+
     getInventory() {
         return this.#inventory;
     }
@@ -100,7 +104,7 @@ export class Player extends Entity {
     }
 
     attackEntity(victim, level) {
-        const finalDamage = victim.takeDamage(this.getDamage());
+        const finalDamage = victim.takeDamage(this.getDamage(), level);
         level.addParticle({
             text: finalDamage,
             color: '#ffffff',
@@ -110,10 +114,6 @@ export class Player extends Entity {
             endOpacity: 0,
             lifetime: 0.8
         });
-        if (victim.isDead()) {
-            level.removeMob(victim);
-            this.#score += victim.getScoreIncrease();
-        }
     }
 
     #pickupItemAt(position, level) {
