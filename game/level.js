@@ -4,7 +4,6 @@ import { Structure } from './structure.js';
 import { Mob } from './mob.js';
 import { Item } from './item.js';
 import { MIN_ROOM_SIZE } from '../core/constants.js';
-import { Particle } from '../ui/particle-manager.js';
 
 export class Level {
     #width;
@@ -24,12 +23,13 @@ export class Level {
     #mobs = [];
     #items = new Map;
 
-    constructor(width, height, player, index, addParticleCallback) {
+    constructor(width, height, player, index, addParticleCallback, generateLootCallback) {
         this.#width = width;
         this.#height = height;
         this.#player = player;
         this.#index = index;
         this.addParticle = addParticleCallback;
+        this.generateLootCallback = generateLootCallback;
 
         this.#tileLayer = Array.from({ length: this.#height }, () =>
             Array.from({ length: this.#width }, () => null)
@@ -59,6 +59,10 @@ export class Level {
         for (const mob of mobs) {
             mob.update(this, this.#player, reserved);
         }
+    }
+
+    addPlayerScore(amount) {
+        this.#player.addScore(amount);
     }
 
 //#region utils
@@ -121,19 +125,19 @@ export class Level {
 //#region level generation
 
     #spawnMobs() {
-        const rat_count = Math.floor((this.#index + 1) / 5) + (this.#bspDivisions - 1) * 2;
+        const rat_count = Math.floor((this.#index + 1) / 5) + (this.#bspDivisions - 1) * 4;
         for (let i = 0; i < rat_count; i++) {
             let coord = null;
             while (!coord) {
                 const candidate = this.getRandomCoordInRoom(this.getRandomRoom());
-                if (this.isWalkable(candidate) && !this.getEntityAt(candidate)) {
+                if (!this.getStructure(candidate) && !this.getEntityAt(candidate)) {
                     coord = candidate;
                 }
             }
             this.addMob(coord, 'rat');
         }
 
-        const gelatine_count = Math.round(Math.max(Math.random(), 0.5) * (this.#index + 1) / 3);
+        const gelatine_count = Math.round(Math.max(Math.random(), 0.5) * (this.#index + 1) / 3 * (this.#bspDivisions - 1));
         for (let i = 0; i < gelatine_count; i++) {
             let coord = null;
             while (!coord) {
@@ -300,7 +304,7 @@ export class Level {
             return null;
         }
         if (node.isLeaf()) {
-            return this.getRandomCoordInRoom(node.room, 3);
+            return this.getRandomCoordInRoom(node.room, 2);
         }
         const leftRoom = this.#findRoomInSubtree(node.left);
         if (leftRoom) {
@@ -451,56 +455,74 @@ export class Level {
 
 //#region path finding
 
-    findPath(start, goal, filter = (coord) => { return this.isWalkable(coord); }) {
-        const path = this.findPartialPath(start, goal, filter);
+    findPath(start, goal, {
+        filter = (coord) => this.isWalkable(coord),
+        maxHeuristicFactor = null,
+        maxIterations = null
+    } = {}) {
+        const path = this.findPartialPath(start, goal, {filter: filter, maxHeuristicFactor: maxHeuristicFactor, maxIterations: maxIterations});
         if (!path || path.length == 0 || !path[path.length - 1].equals(goal)) {
             return null;
         }
         return path;
     }
 
-    findPartialPath(start, goal, filter = (coord) => { return this.isWalkable(coord); }) {
-        const openSet = new PriorityQueue();
-        openSet.enqueue(start, 0);
+    findPartialPath(start, goal, {
+        filter = (coord) => this.isWalkable(coord),
+        maxHeuristicFactor = null,
+        maxIterations = null
+    } = {}) {
+        const frontier = new PriorityQueue();
+        const queuedKeys = new Set();
 
         const cameFrom = new Map();
         const gScore = new Map();
-        const fScore = new Map();
 
-        gScore.set(start.toKey(), 0);
-        fScore.set(start.toKey(), start.getDistanceTo(goal));
+        const startKey = start.toKey();
+        const initialHeuristic = start.getDistanceTo(goal);
+        const maxHeuristic = maxHeuristicFactor !== null ? initialHeuristic * maxHeuristicFactor : null;
+
+        gScore.set(startKey, 0);
+        frontier.enqueue(start, initialHeuristic);
+        queuedKeys.add(startKey);
 
         let bestSoFar = start;
-        let bestHeuristic = start.getDistanceTo(goal);
+        let bestHeuristic = initialHeuristic;
 
-        while (!openSet.isEmpty()) {
-            let current = openSet.dequeue();
+        let iterations = 0;
 
-            if (current.equals(goal)) {
-                const path = [current];
-                while (cameFrom.has(current.toKey())) {
-                    current = cameFrom.get(current.toKey());
-                    path.push(current);
-                }
-                path.reverse();
-                return path;
+        while (!frontier.isEmpty()) {
+            if (maxIterations != null && iterations++ >= maxIterations) {
+                break;
             }
 
+            let current = frontier.dequeue();
             const currentKey = current.toKey();
+
+            if (current.equals(goal)) {
+                return this.#reconstructPath(current, cameFrom);
+            }
 
             for (const { coord: neighbor, cost } of this.#getNeighbors(current, filter)) {
                 const neighborKey = neighbor.toKey();
                 const tentativeG = gScore.get(currentKey) + cost;
 
                 if (!gScore.has(neighborKey) || tentativeG < gScore.get(neighborKey)) {
+                    const heuristic = neighbor.getDistanceTo(goal);
+
+                    if (maxHeuristic != null && heuristic > maxHeuristic) {
+                        continue;
+                    }
+
                     cameFrom.set(neighborKey, current);
                     gScore.set(neighborKey, tentativeG);
 
-                    const heuristic = neighbor.getDistanceTo(goal);
                     const totalCost = tentativeG + heuristic;
 
-                    fScore.set(neighborKey, totalCost);
-                    openSet.enqueue(neighbor, totalCost);
+                    if (!queuedKeys.has(neighborKey)) {
+                        frontier.enqueue(neighbor, totalCost);
+                        queuedKeys.add(neighborKey);
+                    }
 
                     if (heuristic < bestHeuristic) {
                         bestSoFar = neighbor;
@@ -510,15 +532,21 @@ export class Level {
             }
         }
 
-        const path = [bestSoFar];
-        let current = bestSoFar;
+        return this.#reconstructPath(bestSoFar, cameFrom);
+    }
+
+    #reconstructPath(end, cameFrom) {
+        const path = [end];
+        let current = end;
+
         while (cameFrom.has(current.toKey())) {
             current = cameFrom.get(current.toKey());
             path.push(current);
         }
-        path.reverse();
-        return path;
+
+        return path.reverse();
     }
+
 
     #getNeighbors(coord, filter = (coord) => { return this.isWalkable(coord); }) {
         const deltas = [
@@ -639,10 +667,18 @@ export class Level {
         this.#items.delete(coord.toKey());
     }
 
+    generateLootAt(coord, tableId) {
+        const items = this.generateLootCallback(tableId);
+        for (const {id, count} of items) {
+            this.placeItemAt(coord, new Item(id, count));
+        }
+    }
+
     placeItemAt(coord, item) {
-        if (!this.#findNearestFreeTileForItem(coord, item)) return;
-        if (item.getAmount() == 0) return;
-        this.placeItemAt(coord, item);
+        while (item.getAmount() > 0) {
+            const placed = this.#findNearestFreeTileForItem(coord, item);
+            if (!placed) break;
+        }
     }
 
     #findNearestFreeTileForItem(startCoord, item) {
@@ -660,11 +696,14 @@ export class Level {
                     item.setAmount(0);
                     return true;
                 }
-                if (existingItem.isStackable() && existingItem.getAmount() < existingItem.getStackSize()) {
+                if (existingItem.isStackable()
+                    && existingItem.getType() === item.getType()
+                    && existingItem.getAmount() < existingItem.getStackSize()
+                ) {
                     const canAdd = Math.min(item.getAmount(), existingItem.getStackSize() - existingItem.getAmount());
                     existingItem.increaseAmount(canAdd);
                     item.decreaseAmount(canAdd);
-                    return true;
+                    if (item.getAmount() == 0) return true;
                 }
             }
 

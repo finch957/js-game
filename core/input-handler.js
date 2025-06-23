@@ -140,7 +140,7 @@ export class InputHandler {
 
     #handleClickOnWorld(mouseX, mouseY) {
         if (this.#player.isMoving()) {
-            if (target) this.#player.clearPath();
+            this.#player.clearPath();
             return;
         }
 
@@ -150,13 +150,13 @@ export class InputHandler {
 
         if (targetTile.equals(playerPos)) return;
 
-        const path = this.#level.findPath(playerPos, targetTile, (coord) => {
+        const path = this.#level.findPath(playerPos, targetTile, { filter: (coord) => {
             const entity = this.#level.getEntityAt(coord);
             const structure = this.#level.getStructure(coord);
             return this.#level.getTile(coord).isWalkable()
                     && (!entity || coord.equals(targetTile))
                     && (!structure || structure.isWalkable() || coord.equals(targetTile));
-        });
+        }});
 
         if (!path || path.length < 1) return;
 
