@@ -6,6 +6,7 @@ import { InputHandler } from './input-handler.js';
 import { Coord } from './utils.js';
 import { UIManager } from '../ui/ui-manager.js';
 import { ParticleManager } from '../ui/particle-manager.js';
+import { LootManager } from '../game/loot-manager.js';
 
 export class GameManager {
     #canvas;
@@ -19,6 +20,7 @@ export class GameManager {
     #level;
     #uiManager;
     #particleManager;
+    #lootManager;
     #lastTime = performance.now();
 
     constructor(canvas) {
@@ -40,6 +42,7 @@ export class GameManager {
         );
 
         this.#particleManager = new ParticleManager();
+        this.#lootManager = new LootManager();
 
         this.#input = new InputHandler(null, this.#level, this.#canvas, this.#camera, this.#uiManager);
 
@@ -91,7 +94,11 @@ export class GameManager {
         const index = this.#activeLevelIndex;
         if (!this.#levels[index]) {
             const levelSize = 20 * (index == 0 ? 1 : index < 8 ? 2 : Math.floor(Math.log2(index)));
-            this.#levels[index] = new Level(levelSize, levelSize, this.#player, index, this.#addParticle.bind(this));
+            this.#levels[index] = new Level(
+                levelSize, levelSize, this.#player, index,
+                this.#particleManager.addParticle.bind(this.#particleManager),
+                this.#lootManager.generateLoot.bind(this.#lootManager)
+            );
         }
 
         this.#level = this.#levels[index];
@@ -102,10 +109,6 @@ export class GameManager {
         } else {
             this.#player.setPosition(this.#level.getEntryPoint());
         }
-    }
-
-    #addParticle(config) {
-        this.#particleManager.addParticle(config);
     }
 
     #gameLoop(currentTime) {

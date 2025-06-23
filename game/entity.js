@@ -50,7 +50,9 @@ export class Entity {
         const finalDamage = Math.max(0, amount - reduction);
 
         this.#health -= finalDamage;
-        if (this.#health < 0) this.#health = 0;
+        if (this.#health < 0) {
+            this.#health = 0;
+        }
         return finalDamage;
     }
 
@@ -167,7 +169,7 @@ export class Entity {
     }
 
     attackEntity(victim, level) {
-        const finalDamage = victim.takeDamage(this.getDamage());
+        const finalDamage = victim.takeDamage(this.getDamage(), level);
         if (finalDamage > 0) {
             level.addParticle({
                 text: finalDamage,

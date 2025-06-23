@@ -1,0 +1,40 @@
+{
+  "chest": {
+    "rollsMin": 1,
+    "rollsMax": 3,
+    "entries": {
+      "common": { "weight": 80, "group": true },
+      "rare": { "weight": 20, "group": true, "unique": true }
+    }
+  },
+  "mimic": {
+    "rollsMin": 1,
+    "rollsMax": 2,
+    "entries": {
+      "common": { "weight": 30, "group": true, "unique": true  },
+      "rare": { "weight": 60, "group": true },
+      "legendary": { "weight": 10, "group": true, "unique": true }
+    }
+  },
+  "common": {
+    "entries": {
+      "leather-armor": { "weight": 15, "unique": true },
+      "dagger": { "weight": 15, "unique": true },
+      "healing-potion": { "weight": 70, "min": 1, "max": 2 }
+    }
+  },
+  "rare": {
+    "entries": {
+      "short-sword": { "weight": 50, "unique": true },
+      "falchion": { "weight": 25, "unique": true },
+      "chainmail": { "weight": 25, "unique": true }
+    }
+  },
+  "legendary": {
+    "entries": {
+      "flamberge": { "weight": 55, "unique": true },
+      "breastplate": { "weight": 30, "unique": true },
+      "greatsword": { "weight": 15, "unique": true }
+    }
+  }
+}

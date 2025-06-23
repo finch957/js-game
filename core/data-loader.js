@@ -2,15 +2,17 @@ const dataStore = {};
 
 export async function loadGameData() {
     const files = {
-        tile:       'https://finch957.github.io/js-game/assets/data/tile-data.json',
-        structure:  'https://finch957.github.io/js-game/assets/data/structure-data.json',
-        entity:     'https://finch957.github.io/js-game/assets/data/entity-data.json',
-        item:       'https://finch957.github.io/js-game/assets/data/item-data.json',
-        ui:         'https://finch957.github.io/js-game/assets/data/ui-data.json',
+        tile:       'assets/data/tile-data.json',
+        structure:  'assets/data/structure-data.json',
+        entity:     'assets/data/entity-data.json',
+        item:       'assets/data/item-data.json',
+        ui:         'assets/data/ui-data.json',
+        lootTable:  'assets/data/loot-tables.json'
     };
 
     for (const [key, path] of Object.entries(files)) {
-        const res = await fetch(path);
+        const prefix = 'https://finch957.github.io/js-game/';
+        const res = await fetch(prefix + path);
         if (!res.ok) {
             throw new Error(`Failed to load ${path}`);
         }

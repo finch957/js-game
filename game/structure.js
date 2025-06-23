@@ -1,6 +1,6 @@
 import { getData } from '../core/data-loader.js';
 import { Item } from './item.js';
-import { weightedRandom } from '../core/utils.js';
+//import { weightedRandom } from '../core/utils.js';
 
 export class Structure {
     #type;
@@ -43,23 +43,11 @@ export class Structure {
             break;
             case 'trap-active':
                 this.setType('trap-disarmed');
-                entity.takeDamage(10);
-                if (entity.isDead()) {
-                    level.removeMob(entity);
-                }
+                entity.takeDamage(10, level);
             break;
             case 'chest':
                 level.removeStructure(coord);
-                const itemToPlace = weightedRandom(new Map([
-                    ['healing-potion', 60],
-                    ['short-sword', 25],
-                    ['chainmail', 15]
-                ]));
-                let itemCount = 1;
-                if (itemToPlace == 'healing-potion') {
-                    itemCount = Math.round(Math.max(Math.random(), 0.34) * 3);
-                }
-                level.placeItemAt(coord, new Item(itemToPlace, itemCount));
+                level.generateLootAt(coord, 'chest');
             break;
             case 'fake-chest':
                 level.removeStructure(coord);
