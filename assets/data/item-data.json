@@ -8,18 +8,64 @@
     "stackable": true,
     "stack": 4
   },
+
+
+  "dagger": {
+    "description": "7 DMG",
+    "sprite": "dagger.png",
+    "category": "weapon",
+    "stackable": false,
+    "damage": 7
+  },
   "short-sword": {
-    "description": "10 DMG",
+    "description": "9 DMG",
     "sprite": "short-sword.png",
     "category": "weapon",
     "stackable": false,
-    "damage": 10
+    "damage": 9
+  },
+  "falchion": {
+    "description": "12 DMG",
+    "sprite": "falchion.png",
+    "category": "weapon",
+    "stackable": false,
+    "damage": 12
+  },
+  "flamberge": {
+    "description": "15 DMG",
+    "sprite": "flamberge.png",
+    "category": "weapon",
+    "stackable": false,
+    "damage": 15
+  },
+  "greatsword": {
+    "description": "20 DMG",
+    "sprite": "greatsword.png",
+    "category": "weapon",
+    "stackable": false,
+    "damage": 20
+  },
+
+
+  "leather-armor": {
+    "description": "4 DEF",
+    "sprite": "leather-armor.png",
+    "category": "armor",
+    "stackable": false,
+    "defense": 4
   },
   "chainmail": {
-    "description": "5 DEF",
+    "description": "6 DEF",
     "sprite": "chainmail.png",
     "category": "armor",
     "stackable": false,
-    "defense": 5
+    "defense": 6
+  },
+  "breastplate": {
+    "description": "10 DEF",
+    "sprite": "breastplate.png",
+    "category": "armor",
+    "stackable": false,
+    "defense": 10
   }
 }
