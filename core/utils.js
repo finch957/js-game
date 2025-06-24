@@ -4,10 +4,15 @@ export class Coord {
         this.y = y;
     }
 
-    getDistanceTo(other) {
+    getDistanceTo(other, type = 'manhattan') {
         const dx = Math.abs(this.x - other.x);
         const dy = Math.abs(this.y - other.y);
-        return dx + dy;
+
+        if (type == 'euclidean') {
+            return Math.sqrt(dx * dx + dy * dy);
+        } else if (type == 'manhattan') {
+            return dx + dy;
+        }
     }
 
     toKey() {
