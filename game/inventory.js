@@ -8,6 +8,10 @@ export class Inventory {
         this.#items = Array(this.#slotCount).fill(null);
     }
 
+    hasItem(type) {
+        return this.#items.some(item => item?.getType() == type);
+    }
+
     getWeapon() {
         return this.#items[0];
     }
