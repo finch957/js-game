@@ -30,12 +30,11 @@ class LootTable {
         }
     }
 
-    getRandomLoot(LootManager) {
+    getRandomLoot(LootManager, unique = new Set()) {
         const weights = new Map(
             Array.from(this.entries.entries()).map(([key, entry]) => [key, entry.weight])
         );
 
-        const unique = new Set();
         const items = [];
         const rolls = Math.floor(this.rollsMin + Math.random() * (this.rollsMax - this.rollsMin + 1));
 
@@ -54,7 +53,7 @@ class LootTable {
             }
 
             if (entryData.isGroup()) {
-                const groupItems = LootManager.generateLoot(entryId);
+                const groupItems = LootManager.generateLoot(entryId, unique);
 
                 items.push(...groupItems);
                 i++;
@@ -90,10 +89,10 @@ export class LootManager {
         }
     }
 
-    generateLoot(tableId) {
+    generateLoot(tableId, unique = new Set()) {
         const table = this.getTable(tableId);
         if (!table) return [];
-        return table.getRandomLoot(this);
+        return table.getRandomLoot(this, unique);
     }
 
     getTable(tableId) {

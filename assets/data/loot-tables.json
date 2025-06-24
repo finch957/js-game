@@ -32,9 +32,9 @@
   },
   "legendary": {
     "entries": {
-      "flamberge": { "weight": 55, "unique": true },
+      "flamberge": { "weight": 50, "unique": true },
       "breastplate": { "weight": 30, "unique": true },
-      "greatsword": { "weight": 15, "unique": true }
+      "greatsword": { "weight": 20, "unique": true }
     }
   }
 }
