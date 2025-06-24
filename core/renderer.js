@@ -108,31 +108,53 @@ export class Renderer {
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     }
 
+
     #renderTilesAndStructures(level, camera, topLeft, bottomRight, scaledTileSize, ctx) {
+        const visitedCoords = level.getVisitedCoords();
+        const visibleCoords = level.getVisibleCoords();
 
-        for (let y = topLeft.y; y <= bottomRight.y; y++) {
-            for (let x = topLeft.x; x <= bottomRight.x; x++) {
-                const tileCoord = new Coord(x, y);
+        for (const key of visitedCoords) {
+            const coord = Coord.fromKey(key);
 
-                if (!level.isInBorders(tileCoord)) continue;
+            if (coord.x < topLeft.x || coord.x > bottomRight.x || coord.y < topLeft.y || coord.y > bottomRight.y) {
+                continue;
+            }
 
-                const tile = level.getTile(tileCoord);
-                if (!tile) continue;
+            const tile = level.getTile(coord);
+            if (!tile) continue;
 
-                const { x: drawX, y: drawY } = camera.worldToScreen(tileCoord);
-                const tileImg = this.#spriteAtlas[tile.getSpriteName()];
+            const { x: drawX, y: drawY } = camera.worldToScreen(coord);
+            const tileImg = this.#spriteAtlas[tile.getSpriteName()];
+
+            const isVisibleNow = visibleCoords.has(key);
+
+            if (isVisibleNow) {
                 ctx.drawImage(tileImg, drawX, drawY, scaledTileSize, scaledTileSize);
+            } else {
+                ctx.save();
+                ctx.globalAlpha = 0.3;
+                ctx.drawImage(tileImg, drawX, drawY, scaledTileSize, scaledTileSize);
+                ctx.restore();
+            }
 
-                const structure = level.getStructure(tileCoord);
-                if (structure) {
-                    const structureImg = this.#spriteAtlas[structure.getSpriteName()];
+            const structure = level.getStructure(coord);
+            if (structure) {
+                const structureImg = this.#spriteAtlas[structure.getSpriteName()];
+
+                if (isVisibleNow) {
                     ctx.drawImage(structureImg, drawX, drawY, scaledTileSize, scaledTileSize);
+                } else {
+                    ctx.save();
+                    ctx.filter = 'brightness(30%)';
+                    ctx.drawImage(structureImg, drawX, drawY, scaledTileSize, scaledTileSize);
+                    ctx.restore();
                 }
             }
         }
     }
 
     #renderItems(level, camera, scaledTileSize, ctx) {
+        const visibleCoords = level.getVisibleCoords();
 
         ctx.font = `${Math.floor(scaledTileSize * 0.35)}px PressStart2P`;
         ctx.fillStyle = 'white';
@@ -141,7 +163,7 @@ export class Renderer {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'bottom';
 
-        for (const [itemPos, item] of level.getItems()) {
+        const renderItem = (itemPos, item) => {
             const { x: itemX, y: itemY } = camera.worldToScreen(Coord.fromKey(itemPos));
             const itemImg = this.#spriteAtlas[item.getSpriteName()];
             ctx.drawImage(itemImg, itemX, itemY, scaledTileSize, scaledTileSize);
@@ -155,13 +177,28 @@ export class Renderer {
                 ctx.fillText(text, centerX + 10, bottomY + 2);
             }
         }
+
+        for (const [itemPos, item] of level.getItems()) {
+            if (!visibleCoords.has(itemPos)) {
+                ctx.save();
+                ctx.filter = 'brightness(30%)';
+                renderItem(itemPos, item);
+                ctx.restore();
+            } else {
+                renderItem(itemPos, item);
+            }
+        }
     }
 
     #renderEntities(level, camera, scaledTileSize, ctx) {
+        const visibleCoords = level.getVisibleCoords();
 
         for (const entity of level.getEntities()) {
-            const entityPos = entity.getDrawPosition();
-            const { x: entityX, y: entityY } = camera.worldToScreen(entityPos);
+            const entityPos = entity.getPosition();
+            if (!visibleCoords.has(entityPos.toKey())) continue;
+
+            const entityDrawPos = entity.getDrawPosition();
+            const { x: entityX, y: entityY } = camera.worldToScreen(entityDrawPos);
             const entityImg = this.#spriteAtlas[entity.getSpriteName()];
             const flip = entity.isFacingLeft();
             ctx.save();

@@ -16,6 +16,8 @@ export class Level {
 
     #tileLayer;
     #structureLayer;
+    #visibleCoords = new Set();
+    #visitedCoords = new Set();
     #rooms = [];
     #bspDivisions;
 
@@ -59,6 +61,8 @@ export class Level {
         for (const mob of mobs) {
             mob.update(this, this.#player, reserved);
         }
+
+        this.updateFOV();
     }
 
     addPlayerScore(amount) {
@@ -71,7 +75,7 @@ export class Level {
         return this.#tick;
     }
 
-    getLevelNumber() {
+    getLevelIndex() {
         return this.#index;
     }
 
@@ -118,6 +122,16 @@ export class Level {
         if (!tile || !tile.isWalkable() || (structure && !structure.isWalkable())) return false;
 
         return true;
+    }
+
+    isTransparent(coord) {
+        if (!this.isInBorders(coord)) return false;
+
+        const tile = this.getTile(coord);
+        const structure = this.getStructure(coord);
+        if ((!tile || tile.isTransparent()) && (!structure || structure.isTransparent())) return true;
+
+        return false;
     }
 
 //#endregion
@@ -617,6 +631,100 @@ export class Level {
 
     removeStructure(coord) {
         this.setStructure(coord, null);
+    }
+
+//#endregion
+
+//#region fov
+
+    updateFOV(radius = 16) {
+        const center = this.#player.getPosition();
+        const visible = new Set();
+        visible.add(center.toKey());
+
+        for (let octant = 0; octant < 8; octant++) {
+            this.#castLight(center, 1, 1.0, 0.0, radius, octant, visible);
+        }
+
+        this.#visibleCoords = visible;
+        for (const key of visible) {
+            this.#visitedCoords.add(key);
+        }
+    }
+
+    #castLight(origin, row, startSlope, endSlope, radius, octant, visible) {
+        if (startSlope < endSlope) return;
+
+        let newStart = startSlope;
+        let blocked = false;
+
+        for (let distance = row; distance <= radius && !blocked; distance++) {
+            let prevBlocked = false;
+
+            for (let i = -distance; i <= 0; i++) {
+                const dx = i;
+                const dy = -distance;
+
+                const leftSlope = (dx - 0.5) / (dy + 0.5);
+                const rightSlope = (dx + 0.5) / (dy - 0.5);
+
+                if (rightSlope > newStart) continue;
+                if (leftSlope < endSlope) break;
+
+                const localCoord = this.#transformOctant(dy, dx, octant);
+                const coord = origin.add(localCoord);
+
+                if (!this.isInBorders(coord)) continue;
+
+                const dist = Math.sqrt(localCoord.x * localCoord.x + localCoord.y * localCoord.y);
+                if (dist <= radius) {
+                    visible.add(coord.toKey());
+                }
+
+                const transparent = this.isTransparent(coord);
+
+                if (blocked) {
+                    if (!transparent) {
+                        newStart = rightSlope;
+                        prevBlocked = true;
+                    } else {
+                        blocked = false;
+                        startSlope = newStart;
+                    }
+                } else {
+                    if (!transparent) {
+                        blocked = true;
+                        this.#castLight(origin, distance + 1, newStart, leftSlope, radius, octant, visible);
+                        newStart = rightSlope;
+                    }
+                }
+            }
+
+            if (blocked) break;
+        }
+    }
+
+    #transformOctant(row, col, octant) {
+        const flipX = (octant & 4) != 0;
+        const flipY = (octant & 2) != 0;
+        const swapXY = (octant & 1) != 0;
+
+        let x = col;
+        let y = row;
+
+        if (swapXY) [x, y] = [y, x];
+        if (flipX) x = -x;
+        if (flipY) y = -y;
+
+        return new Coord(x, y);
+    }
+
+    getVisibleCoords() {
+        return this.#visibleCoords;
+    }
+
+    getVisitedCoords() {
+        return this.#visitedCoords;
     }
 
 //#endregion
