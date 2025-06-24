@@ -39,13 +39,16 @@ export class InputHandler {
         const pos = this.#player.getPosition();
         let target = null;
 
-        switch (event.key) {
-            case ' ':
+        switch (event.code) {
+            case 'Space':
                 if (this.#player.isMoving()) {
                     this.#player.clearPath();
                     return;
                 }
                 this.#player.skipTick();
+                break;
+            case 'KeyH':
+                this.#player.useHealingPotion();
                 break;
             case 'ArrowUp':
                 target = new Coord(pos.x, pos.y - 1);
@@ -149,6 +152,7 @@ export class InputHandler {
         const playerPos = this.#player.getPosition();
 
         if (targetTile.equals(playerPos)) return;
+        if (!this.#level.getVisitedCoords().has(targetTile.toKey())) return;
 
         const path = this.#level.findPath(playerPos, targetTile, { filter: (coord) => {
             const entity = this.#level.getEntityAt(coord);

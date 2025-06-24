@@ -83,7 +83,7 @@ export class Player extends Entity {
         const structure = level.getStructure(newPosition);
         if (structure && structure.isInteractable()) {
             if (structure.getType() == 'ladder-up') {
-                if (level.getLevelNumber() < 1) return false;
+                if (level.getLevelIndex() < 1) return false;
                 this.#changeLevelCallback(-1);
             } else if (structure.getType() == 'ladder-down') {
                 this.#changeLevelCallback(1);
@@ -148,6 +148,13 @@ export class Player extends Entity {
         if (!item) return;
 
         if (this.#inventory.useItemAt(this, index)) this.#updateInventoryUICallback();
+    }
+
+    useHealingPotion() {
+        if (this.#inventory.hasItem('healing-potion')) {
+            this.#inventory.useLastOfType('healing-potion', this);
+            this.#updateInventoryUICallback();
+        }
     }
 
 }
