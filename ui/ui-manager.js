@@ -180,7 +180,7 @@ export class UIManager {
             }),
             new MenuElement({
                 type: 'text',
-                text: 'Score',
+                text: 'SC',
                 anchorX: 'right', anchorY: 'top',
                 offsetX: -150, offsetY: 45
             }),
@@ -317,11 +317,14 @@ export class UIManager {
         this.#activeMenus = [];
     }
 
-    updateHudData(hp = 0, maxHp = 100, score) {
+    updateHudData(hp = 0, maxHp = 100, score, levelIndex) {
         this.#healthRatio = hp / maxHp;
         for (const el of this.#menus.get('hud').elements) {
-            if (el.type == 'text' && el.text.startsWith('Score')) {
-                el.text = 'Score ' + score;
+            if (el.type == 'text' && el.text.startsWith('SC')) {
+                const text = 'SC ' + score + ' LVL ' + levelIndex;
+                el.text = text;
+                el.offsetX = -text.length * 15;
+                el.updateLayout(this.#canvasWidth, this.#canvasHeight);
                 return;
             }
         }

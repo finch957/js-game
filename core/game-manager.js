@@ -109,6 +109,7 @@ export class GameManager {
         } else {
             this.#player.setPosition(this.#level.getEntryPoint());
         }
+        this.#level.updateFOV();
     }
 
     #gameLoop(currentTime) {
@@ -119,7 +120,7 @@ export class GameManager {
             entity.advanceMovement(this.#level, deltaTime);
         }
 
-        this.#uiManager.updateHudData(this.#player.getHealth(), this.#player.getMaxHealth(), this.#player.getScore());
+        this.#uiManager.updateHudData(this.#player.getHealth(), this.#player.getMaxHealth(), this.#player.getScore(), this.#level.getLevelIndex());
         this.#camera.update();
         this.#particleManager.update(deltaTime);
 
