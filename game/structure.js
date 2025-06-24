@@ -1,12 +1,12 @@
 import { getData } from '../core/data-loader.js';
 import { Item } from './item.js';
-//import { weightedRandom } from '../core/utils.js';
 
 export class Structure {
     #type;
     #spriteName;
     #isWalkable;
     #isInteractable;
+    #isTransparent;
 
     constructor(type) {
         this.setType(type);
@@ -15,9 +15,10 @@ export class Structure {
     setType(type) {
         this.#type = type;
         const data = getData('structure', type);
+        this.#spriteName = data.sprite;
         this.#isWalkable = data.walkable;
         this.#isInteractable = data.interactable;
-        this.#spriteName = data.sprite;
+        this.#isTransparent = data.transparent;
     }
 
     getType() {
@@ -34,6 +35,10 @@ export class Structure {
 
     isInteractable() {
         return this.#isInteractable;
+    }
+
+    isTransparent() {
+        return this.#isTransparent;
     }
 
     interact(entity, level, coord) {

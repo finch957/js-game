@@ -4,6 +4,7 @@ export class Tile {
     #type;
     #spriteName;
     #isWalkable;
+    #isTransparent;
 
     constructor(type) {
         this.setType(type);
@@ -12,8 +13,9 @@ export class Tile {
     setType(type) {
         this.#type = type;
         const data = getData('tile', type);
-        this.#isWalkable = data.walkable;
         this.#spriteName = data.sprite;
+        this.#isWalkable = data.walkable;
+        this.#isTransparent = data.transparent;
     }
 
     getType() {
@@ -26,5 +28,9 @@ export class Tile {
 
     isWalkable() {
         return this.#isWalkable;
+    }
+
+    isTransparent() {
+        return this.#isTransparent;
     }
 }
